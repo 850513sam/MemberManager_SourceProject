@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="favicons.png" />
+    <title><%= projectName %></title>
+
+    <!--http://www.html5rocks.com/en/mobile/mobifying/-->
+    <meta
+      name="viewport"
+      content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1,minimal-ui=true"
+    />
+
+    <!--https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html-->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- force webkit on 360 -->
+    <meta name="renderer" content="webkit" />
+    <meta name="force-rendering" content="webkit" />
+    <!-- force edge on IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="msapplication-tap-highlight" content="no" />
+
+    <!-- force full screen on some browser -->
+    <meta name="full-screen" content="yes" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!--fix fireball/issues/3568 -->
+    <!--<meta name="browsermode" content="application">-->
+    <meta name="x5-page-mode" content="app" />
+
+    <!--<link rel="apple-touch-icon" href=".png" />-->
+    <!--<link rel="apple-touch-icon-precomposed" href=".png" />-->
+
+    <link rel="stylesheet" type="text/css" href="<%= cssUrl %>" />
+  </head>
+  <body>
+    <div id="brandSplash" class="hide">
+      <img id="brandLogo" />
+    </div>
+    <img id="footer" class="hide" />
+    <div id="MainGame">
+      <div id="scrollArea1" class="hide scrollArea"></div>
+      <div id="GameDiv" style="min-height: fit-content">
+        <div id="Cocos3dGameContainer">
+          <canvas
+            id="GameCanvas"
+            oncontextmenu="event.preventDefault()"
+            tabindex="0"
+          ></canvas>
+        </div>
+      </div>
+      <div id="scrollArea2" class="hide scrollArea"></div>
+    </div>
+    <%- include(cocosTemplate, {}) %>
+  </body>
+  <script>
+    var logoPromiseResolve = null;
+    var logoPromise = new Promise((resolve) => {
+      logoPromiseResolve = resolve;
+    });
+    const offsetHeight = 300;
+    const agent = window.navigator.userAgent.toLowerCase();
+    const isMobile = agent && /mobile|android|iphone|ipad/.test(agent);
+    const isIOS = agent && /iphone|ipad|ipod|ios|os/.test(agent);
+    const isIframe = !!window.parent && window !== window.parent;
+    const isIOSChrome = navigator.userAgent.indexOf("CriOS") >= 0;
+    const body = document.querySelector("body");
+    function beforeGameRun() {
+      const setting = cc.settings._settings.settings;
+      let hasBrandLogo = false;
+      if (setting.BrandLogoUrl !== "") {
+        const splash = document.getElementById("brandSplash");
+        if (splash) {
+          splash.classList.remove("hide");
+          document.getElementById("brandLogo").src = setting.BrandLogoUrl;
+          hasBrandLogo = true;
+          setTimeout(() => {
+            splash.remove();
+            logoPromiseResolve();
+          }, Math.max(0, setting.BrandLogoActiveDuration));
+        }
+      }
+      if (setting.FooterUrl !== "") {
+        const footer = document.getElementById("footer");
+        if (footer) {
+          footer.classList.remove("hide");
+          footer.src = setting.FooterUrl;
+        }
+      }
+      if (!hasBrandLogo) {
+        logoPromiseResolve();
+      }
+      if (isIOS && !isIframe && !isIOSChrome) {
+        const area1 = document.getElementById("scrollArea1");
+        const area2 = document.getElementById("scrollArea2");
+        area1.classList.remove("hide");
+        area2.classList.remove("hide");
+        document.querySelector("html").scroll(0, offsetHeight);
+      } else {
+        const gameDiv = document.getElementById("GameDiv");
+        gameDiv.style["position"] = "absolute";
+      }
+      function updateGameDivBottom() {
+        const gameDivstyle = document.querySelector("#GameDiv").style;
+        if (window.innerWidth > window.innerHeight && isMobile) {
+          const rotateToRight = window.orientation === -90;
+          gameDivstyle["bottom"] = `${
+            rotateToRight
+              ? window.innerHeight - window.innerWidth
+              : -window.innerWidth
+          }px`;
+        } else {
+          gameDivstyle["bottom"] = "0px";
+        }
+      }
+
+      function initEvent() {
+        if (isIOS && !isIframe) {
+          addEventListener("resize", () => {
+            window.scroll(0, offsetHeight);
+            body.scroll(0, offsetHeight);
+            setTimeout(() => {
+              window.scroll(0, offsetHeight);
+              body.scroll(0, offsetHeight);
+            }, 500);
+            for (let i = 0; i <= 10; i++) {
+              setTimeout(() => {
+                updateGameDivBottom();
+              }, i * 100);
+            }
+          });
+          window.addEventListener("orientationchange", () => {
+            window.scroll(0, offsetHeight);
+            body.scroll(0, offsetHeight);
+            setTimeout(() => {
+              window.scroll(0, offsetHeight);
+              body.scroll(0, offsetHeight);
+            }, 500);
+            for (let i = 0; i <= 10; i++) {
+              setTimeout(() => {
+                updateGameDivBottom();
+              }, i * 100);
+            }
+          });
+          window.scroll(0, offsetHeight);
+          body.scroll(0, offsetHeight);
+        }
+      }
+
+      initEvent();
+    }
+
+    function removeFooter() {
+      const footer = document.getElementById("footer");
+      footer?.remove();
+    }
+  </script>
+  <style>
+    .hide {
+      display: none;
+    }
+
+    #brandSplash {
+      width: 100vw;
+      height: 100%;
+      position: fixed;
+      background-color: #030303;
+      z-index: 2;
+    }
+
+    #brandLogo {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      max-height: 100%;
+      max-width: 100%;
+      width: auto;
+      height: auto;
+    }
+
+    #footer {
+      z-index: 1;
+      position: fixed;
+      bottom: 0;
+      max-height: 50px;
+      max-width: 120px;
+    }
+
+    @media (orientation: portrait) {
+      #GameDiv {
+        bottom: 0;
+        position: fixed;
+      }
+
+      #GameCanvas {
+        position: fixed;
+        bottom: 0;
+      }
+    }
+    .hide {
+      display: none;
+    }
+    .scrollArea {
+      width: 100vw;
+      height: 300px;
+    }
+  </style>
+</html>

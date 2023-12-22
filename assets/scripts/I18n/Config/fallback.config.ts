@@ -1,0 +1,28 @@
+import { SupportLanguage } from './support.config';
+
+export const fallbackLanguages: { [language: string]: SupportLanguage } = {
+    en: SupportLanguage.EN,
+    'en-US': SupportLanguage.EN,
+    'en-EG': SupportLanguage.EN,
+    'en-AU': SupportLanguage.EN,
+    'en-GB': SupportLanguage.EN,
+    'en-CA': SupportLanguage.EN,
+    'en-NZ': SupportLanguage.EN,
+    'en-IE': SupportLanguage.EN,
+    'en-ZA': SupportLanguage.EN,
+    'en-JM': SupportLanguage.EN,
+    'en-BZ': SupportLanguage.EN,
+    'en-TT': SupportLanguage.EN,
+    sch: SupportLanguage.EN,
+    tch: SupportLanguage.EN,
+    tha: SupportLanguage.EN,
+    'zh-CN': SupportLanguage.SCH,
+    'zh-SG': SupportLanguage.SCH,
+    'zh-chs': SupportLanguage.SCH,
+    cn: SupportLanguage.SCH,
+    'zh-TW': SupportLanguage.TCH,
+    'zh-HK': SupportLanguage.TCH,
+    'zh-MO': SupportLanguage.TCH,
+    'zh-cht': SupportLanguage.TCH,
+    tw: SupportLanguage.TCH,
+};

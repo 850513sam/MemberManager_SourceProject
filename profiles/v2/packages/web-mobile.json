@@ -1,0 +1,22 @@
+{
+  "common": {
+    "polyfills": {
+      "asyncFunctions": true
+    },
+    "buildPath": "project://build",
+    "outputName": "web-mobile",
+    "mainBundleCompressionType": "merge_dep",
+    "platform": "web-mobile",
+    "name": "HiloClient",
+    "startScene": "1e8f5cbe-9564-4635-9a15-85e797071d87",
+    "replaceSplashScreen": true,
+    "sourceMaps": true
+  },
+  "options": {
+    "web-mobile": {
+      "orientation": "portrait",
+      "embedWebDebugger": false,
+      "__version__": "1.0.1"
+    }
+  }
+}

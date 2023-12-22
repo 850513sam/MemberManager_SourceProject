@@ -1,0 +1,31 @@
+
+#///////////////////////////
+# Cocos Creator 3D Project
+#///////////////////////////
+library/
+temp/
+local/
+build/
+native
+
+profiles/*
+!profiles/v2
+profiles/v2/*
+# Keep web-mobile setting
+!profiles/v2/packages
+profiles/v2/packages/*
+!profiles/v2/packages/web-mobile.json
+#//////////////////////////
+# NPM
+#//////////////////////////
+node_modules/
+
+#//////////////////////////
+# VSCode
+#//////////////////////////
+.vscode/
+
+#//////////////////////////
+# WebStorm
+#//////////////////////////
+.idea/
