@@ -24,6 +24,7 @@ export class MatchManager extends Component
         const teamA: PlayerInfo[] = [];
         const teamB: PlayerInfo[] = [];
         const nextMatchPlayers: PlayerInfo[][] = [teamA, teamB];
+        let tmpNextMatchPlayers: PlayerInfo[] = [];
         let nextPlayer: PlayerInfo = null;
         this.clearFakePlayer();
         this.updateRestingPlyers();
@@ -31,22 +32,47 @@ export class MatchManager extends Component
         for (let i = 0; i < 4; i++)
         {
             nextPlayer = this.tryGetPlayer();
-            if (i < 2)
+            tmpNextMatchPlayers.push(nextPlayer);
+        }
+        tmpNextMatchPlayers = this.resortPlayersByAbility(tmpNextMatchPlayers);
+        teamA.push(tmpNextMatchPlayers[0]);
+        teamA.push(tmpNextMatchPlayers[1]);
+        teamB.push(tmpNextMatchPlayers[2]);
+        teamB.push(tmpNextMatchPlayers[3]);
+        return nextMatchPlayers;
+    }
+
+    private resortPlayersByAbility(players: PlayerInfo[]): PlayerInfo[]
+    {
+        let newTeam: PlayerInfo[] = [];
+        let strongestPlayer: PlayerInfo = players[0];
+        let weakestPlayer: PlayerInfo = players[0];
+        for (let i = 1; i < players.length; i++)
+        {
+            if (players[i].playerAbility >= strongestPlayer.playerAbility)
             {
-                teamA.push(nextPlayer);
+                strongestPlayer = players[i];
             }
-            else
+
+            if (players[i].playerAbility <= weakestPlayer.playerAbility)
             {
-                teamB.push(nextPlayer);
+                weakestPlayer = players[i];
             }
         }
-        return nextMatchPlayers;
+        players.splice(players.indexOf(strongestPlayer), 1);
+        players.splice(players.indexOf(weakestPlayer), 1);
+        newTeam.push(strongestPlayer);
+        newTeam.push(weakestPlayer);
+        newTeam.push(players[0]);
+        newTeam.push(players[1]);
+        return newTeam;
     }
 
     private tryGetPlayer(): PlayerInfo
     {
         let removeIndex: number = 0;
         let player: PlayerInfo = null;
+        //find less first
         if (this.needToPlayList.length > 0)
         {
             player = this.needToPlayList[randomRangeInt(0, this.needToPlayList.length)];
@@ -54,14 +80,16 @@ export class MatchManager extends Component
         if (!player)
         {
             player = this.restingPlayers[randomRangeInt(0, this.restingPlayers.length)];
-            if (!player)
-            {
-                player = new PlayerInfo();
-            }
-            else
+            if (player)
             {
                 removeIndex = this.restingPlayers.indexOf(player);
                 this.restingPlayers.splice(removeIndex, 1);
+            }
+            else
+            {
+                //return fake player
+                player = new PlayerInfo(-1, true);
+                player.playerName = "";
             }
         }
         else
@@ -86,17 +114,17 @@ export class MatchManager extends Component
 
     private updateRestingPlyers()
     {
-        const newRestingPlayer: PlayerInfo[] = [];
+        const restingPlayers: PlayerInfo[] = [];
         const playerInfoList: PlayerInfo[] = Data.playerInfoList;
         this.restingPlayers = [];
         playerInfoList.forEach((playerInfo: PlayerInfo) => 
         {
-            if (!playerInfo.isPlaying)
+            if (!playerInfo.isPlaying && !playerInfo.isDefaultPlayer)
             {
-                newRestingPlayer.push(playerInfo);
+                restingPlayers.push(playerInfo);
             }
         });
-        this.restingPlayers = newRestingPlayer;
+        this.restingPlayers = restingPlayers;
     }
 
     private clearFakePlayer()

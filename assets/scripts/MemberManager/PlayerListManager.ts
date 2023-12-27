@@ -30,7 +30,7 @@ export class PlayerListManager extends Component
         PlayerListManager.instance = this;
         this.close();
         this.btnClose.node.on(Button.EventType.CLICK, this.onBtnClose.bind(this));
-        PlayerInfoManager.getInstance().generateTestData();
+        // PlayerInfoManager.getInstance().generateTestData();
     }
 
     private onBtnClose()
@@ -61,7 +61,11 @@ export class PlayerListManager extends Component
         let isShow: boolean = false;
         for (let i = 0; i < playerInfoList.length; i++)
         {
-            isShow = !isHidePlayerMember ? true : !playerInfoList[i].isPlaying;
+            if (playerInfoList[i].isDefaultPlayer)
+            {
+                continue;
+            }
+            isShow = !isHidePlayerMember ? true : !playerInfoList[i].isChoose;
             this.playerItemList[i].active = isShow;
         }
     }

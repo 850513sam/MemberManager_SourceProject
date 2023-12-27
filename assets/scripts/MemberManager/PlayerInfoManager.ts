@@ -1,4 +1,4 @@
-import { _decorator, Component, Button, EditBox, Toggle } from 'cc';
+import { _decorator, Component, Button, EditBox, Toggle, randomRangeInt } from 'cc';
 import { Data, PlayerInfo } from './Data';
 import { PlayerListManager } from './PlayerListManager';
 const { ccclass, property } = _decorator;
@@ -68,7 +68,7 @@ export class PlayerInfoManager extends Component
     {
         if (this.isAddPlayer)
         {
-            const playerInfo: PlayerInfo = new PlayerInfo();
+            const playerInfo: PlayerInfo = new PlayerInfo(Data.playerInfoList.length + 1);
             playerInfo.playerName = this.playerName.textLabel.string;
             playerInfo.playerAbility = this.tmpPlayerAbility;
             Data.playerInfoList.push(playerInfo);
@@ -126,11 +126,12 @@ export class PlayerInfoManager extends Component
 
     public generateTestData()
     {
-        for (let i = 0; i < 15; i++)
+        for (let i = 0; i < 16; i++)
+        // for (let i = 0; i < 8; i++)
         {
-            const playerInfo: PlayerInfo = new PlayerInfo();
+            const playerInfo: PlayerInfo = new PlayerInfo(Data.playerInfoList.length + 1);
             playerInfo.playerName = `Player_${i.toString()}`;
-            playerInfo.playerAbility = 1;
+            playerInfo.playerAbility = randomRangeInt(1, 6);
             Data.playerInfoList.push(playerInfo);
             PlayerListManager.getInstance().addPlayerItem();
         }

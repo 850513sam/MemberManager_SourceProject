@@ -1,8 +1,9 @@
 import { _decorator, Component, Button, EditBox, Label } from 'cc';
-import { CourtInfo, Data, PlayerInfo } from './Data';
+import { CheckData, CourtInfo, Data, PlayerInfo } from './Data';
 import { MainUI } from './MainUI';
 import { MatchManager } from './MatchManager';
 import { PlayerListManager } from './PlayerListManager';
+import { EMsgCode, TipsManager } from './TipsManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('CourtInfoManager')
@@ -76,29 +77,22 @@ export class CourtInfoManager extends Component
         for (let i = 0; i < 2; i++)
         {
             const courtInfo = new CourtInfo();
-            const playerA1 = new PlayerInfo();
-            const playerA2 = new PlayerInfo();
-            const playerB1 = new PlayerInfo();
-            const playerB2 = new PlayerInfo();
+            const playerA1 = Data[`defaultPlayer_${i}_0`];
+            const playerA2 = Data[`defaultPlayer_${i}_1`];
+            const playerB1 = Data[`defaultPlayer_${i}_2`];
+            const playerB2 = Data[`defaultPlayer_${i}_3`];
 
-            courtInfo.courtName = `1-${i + 1}`;
+            courtInfo.courtName = `5-${i + 5}`;
             courtInfo.index = i;
             courtInfo.teamA.push(playerA1);
             courtInfo.teamA.push(playerA2);
             courtInfo.teamB.push(playerB1);
             courtInfo.teamB.push(playerB2);
-            courtInfo.teamA[0] = playerA1;
-            courtInfo.teamA[1] = playerA2;
-            courtInfo.teamB[0] = playerB1;
-            courtInfo.teamB[1] = playerB2;
-            courtInfo.defaultTeamA.push(playerA1);
-            courtInfo.defaultTeamA.push(playerA2);
-            courtInfo.defaultTeamB.push(playerB1);
-            courtInfo.defaultTeamB.push(playerB2);
-            courtInfo.defaultTeamA[0] = playerA1;
-            courtInfo.defaultTeamA[1] = playerA2;
-            courtInfo.defaultTeamB[0] = playerB1;
-            courtInfo.defaultTeamB[1] = playerB2;
+
+            Data.playerInfoList.push(playerA1);
+            Data.playerInfoList.push(playerA2);
+            Data.playerInfoList.push(playerB1);
+            Data.playerInfoList.push(playerB2);
 
             Data.courtInfoList.push(courtInfo);
         }
@@ -128,24 +122,75 @@ export class CourtInfoManager extends Component
 
     private onBtnStart()
     {
+        const checkData: CheckData = this.getCheckData();
+        if (!checkData.isCanStart)
+        {
+            TipsManager.getInstance().open(EMsgCode.PLAYER_STATUS_ERROR, checkData.errorPlayer);
+            return;
+        }
         this.btnStart.interactable = false;
         this.btnEnd.interactable = true;
         this.setEditBtnGroup(false);
         this.updatePlayerStatus(true);
         this.updateNextMatchInfo();
+        this.updateTeamRecord();
         MainUI.getInstance().updateCourtInfo(this.editCourtIndex);
         Data.courtInfoList[this.editCourtIndex].isPlaying = true;
+    }
+
+    private getCheckData(): CheckData
+    {
+        const checkData: CheckData = new CheckData();
+        const courtInfoList: CourtInfo = Data.courtInfoList[this.editCourtIndex];
+        const isA1CanPlay: boolean = !courtInfoList.teamA[0].isDefaultPlayer && !courtInfoList.teamA[0].isPlaying;
+        const isA2CanPlay: boolean = !courtInfoList.teamA[1].isDefaultPlayer && !courtInfoList.teamA[1].isPlaying;
+        const isB1CanPlay: boolean = !courtInfoList.teamB[0].isDefaultPlayer && !courtInfoList.teamB[0].isPlaying;
+        const isB2CanPlay: boolean = !courtInfoList.teamB[1].isDefaultPlayer && !courtInfoList.teamB[1].isPlaying;
+        checkData.isCanStart = isA1CanPlay && isA2CanPlay && isB1CanPlay && isB2CanPlay;
+        checkData.errorPlayer += !isA1CanPlay ? `${courtInfoList.teamA[0].playerName}, ` : "";
+        checkData.errorPlayer += !isA2CanPlay ? `${courtInfoList.teamA[1].playerName}, ` : "";
+        checkData.errorPlayer += !isB1CanPlay ? `${courtInfoList.teamB[0].playerName}, ` : "";
+        checkData.errorPlayer += !isB2CanPlay ? `${courtInfoList.teamB[1].playerName}` : "";
+        return checkData;
+    }
+
+    private updateTeamRecord()
+    {
+        Data.teamRecordList.push(Data.courtInfoList[this.editCourtIndex].teamA);
+        Data.teamRecordList.push(Data.courtInfoList[this.editCourtIndex].teamB);
     }
 
     private updateNextMatchInfo() 
     {
         this.nextMatchPlayers = MatchManager.getInstance().getNextMatchPlayers();
-        const playerA1 = this.nextMatchPlayers[0][0].playerName;
-        const playerA2 = this.nextMatchPlayers[0][1].playerName;
-        const playerB1 = this.nextMatchPlayers[1][0].playerName;
-        const playerB2 = this.nextMatchPlayers[1][1].playerName;
-        this.nextMatchInfo.string = `${playerA1} + ${playerA2} vs ${playerB1} + ${playerB2}`;
+        const playerA1: PlayerInfo = this.nextMatchPlayers[0][0];
+        const playerA2: PlayerInfo = this.nextMatchPlayers[0][1];
+        const playerB1: PlayerInfo = this.nextMatchPlayers[1][0];
+        const playerB2: PlayerInfo = this.nextMatchPlayers[1][1];
+        const teamARepeatTimes: number = this.getRepeatTimes(this.nextMatchPlayers[0]);
+        const teamBRepeatTimes: number = this.getRepeatTimes(this.nextMatchPlayers[1]);
+        const teamAInfo: string = `${playerA1.playerName} (${playerA1.playerAbility}) + ${playerA2.playerName} (${playerA2.playerAbility})`;
+        const teamBInfo: string = `${playerB1.playerName} (${playerB1.playerAbility}) + ${playerB2.playerName} (${playerB2.playerAbility})`;
+        this.nextMatchInfo.string = `${teamAInfo} 重複次數 : ${teamARepeatTimes}\nvs\n${teamBInfo} 重複次數 : ${teamBRepeatTimes}`;
+        Data.courtInfoList[this.editCourtIndex].nextMatchPlayers = this.nextMatchPlayers;
         Data.courtInfoList[this.editCourtIndex].nextMatchInfo = this.nextMatchInfo.string;
+    }
+
+    private getRepeatTimes(team: PlayerInfo[]): number
+    {
+        let repeatTimes: number = 0;
+        const teamRecordList: PlayerInfo[][] = Data.teamRecordList;
+        teamRecordList.forEach((teamRecord: PlayerInfo[]) => 
+        {
+            if (teamRecord[0].playerIndex == team[0].playerIndex || teamRecord[0].playerIndex == team[1].playerIndex)
+            {
+                if (teamRecord[1].playerIndex == team[0].playerIndex || teamRecord[1].playerIndex == team[1].playerIndex)
+                {
+                    repeatTimes++;
+                }
+            }
+        });
+        return repeatTimes;
     }
 
     private updatePlayerStatus(isPlaying: boolean) 
@@ -175,19 +220,24 @@ export class CourtInfoManager extends Component
         this.btnStart.interactable = true;
         this.btnEnd.interactable = false;
         this.setEditBtnGroup(true);
+        this.onMatchEnd();
+        MainUI.getInstance().updateCourtInfo(this.editCourtIndex);
+        for (let i = 0; i < 4; i++)
+        {
+            this.onBtnClear(i);
+        }
+    }
+
+    private onMatchEnd()
+    {
         this.updatePlayerStatus(false);
         Data.courtInfoList[this.editCourtIndex].isPlaying = false;
         Data.courtInfoList[this.editCourtIndex].teamA[0].completeMatchCount++;
         Data.courtInfoList[this.editCourtIndex].teamA[1].completeMatchCount++;
         Data.courtInfoList[this.editCourtIndex].teamB[0].completeMatchCount++;
         Data.courtInfoList[this.editCourtIndex].teamB[1].completeMatchCount++;
-        Data.courtInfoList[this.editCourtIndex].teamA = Data.courtInfoList[this.editCourtIndex].defaultTeamA;
-        Data.courtInfoList[this.editCourtIndex].teamB = Data.courtInfoList[this.editCourtIndex].defaultTeamB;
-        MainUI.getInstance().updateCourtInfo(this.editCourtIndex);
-        for (let i = 0; i < 4; i++)
-        {
-            this.onBtnClear(i);
-        }
+        Data.courtInfoList[this.editCourtIndex].teamA = [Data[`defaultPlayer_${this.editCourtIndex}_0`], Data[`defaultPlayer_${this.editCourtIndex}_1`]];
+        Data.courtInfoList[this.editCourtIndex].teamB = [Data[`defaultPlayer_${this.editCourtIndex}_2`], Data[`defaultPlayer_${this.editCourtIndex}_3`]];
     }
 
     private onBtnSet()
@@ -215,16 +265,16 @@ export class CourtInfoManager extends Component
         switch (editPlayerIndex) 
         {
             case 0:
-                defaultPlayer = Data.courtInfoList[this.editCourtIndex].defaultTeamA[0];
+                defaultPlayer = Data[`defaultPlayer_${this.editCourtIndex}_0`];
                 break;
             case 1:
-                defaultPlayer = Data.courtInfoList[this.editCourtIndex].defaultTeamA[1];
+                defaultPlayer = Data[`defaultPlayer_${this.editCourtIndex}_1`];
                 break;
             case 2:
-                defaultPlayer = Data.courtInfoList[this.editCourtIndex].defaultTeamB[0];
+                defaultPlayer = Data[`defaultPlayer_${this.editCourtIndex}_2`];
                 break;
             case 3:
-                defaultPlayer = Data.courtInfoList[this.editCourtIndex].defaultTeamB[1];
+                defaultPlayer = Data[`defaultPlayer_${this.editCourtIndex}_3`];
                 break;
         }
         this.setNewPlayer(defaultPlayer);
@@ -235,22 +285,22 @@ export class CourtInfoManager extends Component
         switch (this.editPlayerIndex)
         {
             case 0:
-                Data.courtInfoList[this.editCourtIndex].teamA[0].isPlaying = false;
+                Data.courtInfoList[this.editCourtIndex].teamA[0].isChoose = false;
                 Data.courtInfoList[this.editCourtIndex].teamA[0] = playerInfo;
                 this.playerName_a1.string = playerInfo.playerName;
                 break;
             case 1:
-                Data.courtInfoList[this.editCourtIndex].teamA[1].isPlaying = false;
+                Data.courtInfoList[this.editCourtIndex].teamA[1].isChoose = false;
                 Data.courtInfoList[this.editCourtIndex].teamA[1] = playerInfo;
                 this.playerName_a2.string = playerInfo.playerName;
                 break;
             case 2:
-                Data.courtInfoList[this.editCourtIndex].teamB[0].isPlaying = false;
+                Data.courtInfoList[this.editCourtIndex].teamB[0].isChoose = false;
                 Data.courtInfoList[this.editCourtIndex].teamB[0] = playerInfo;
                 this.playerName_b1.string = playerInfo.playerName;
                 break;
             case 3:
-                Data.courtInfoList[this.editCourtIndex].teamB[1].isPlaying = false;
+                Data.courtInfoList[this.editCourtIndex].teamB[1].isChoose = false;
                 Data.courtInfoList[this.editCourtIndex].teamB[1] = playerInfo;
                 this.playerName_b2.string = playerInfo.playerName;
                 break;
@@ -304,5 +354,6 @@ export class CourtInfoManager extends Component
         this.playerName_b1.string = courtInfo.teamB[0].playerName;
         this.playerName_b2.string = courtInfo.teamB[1].playerName;
         this.nextMatchInfo.string = Data.courtInfoList[this.editCourtIndex].nextMatchInfo;
+        this.nextMatchPlayers = Data.courtInfoList[this.editCourtIndex].nextMatchPlayers;
     }
 }

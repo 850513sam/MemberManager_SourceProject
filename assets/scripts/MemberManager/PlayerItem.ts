@@ -28,7 +28,7 @@ export class PlayerItem extends Component
         {
             const playerInfo: PlayerInfo = Data.playerInfoList[this.playerIndex];
             CourtInfoManager.getInstance().setNewPlayer(playerInfo);
-            playerInfo.isPlaying = true;
+            playerInfo.isChoose = true;
         }
         else
         {
