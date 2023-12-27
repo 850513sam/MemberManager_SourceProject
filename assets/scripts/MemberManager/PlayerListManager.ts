@@ -66,7 +66,7 @@ export class PlayerListManager extends Component
                 continue;
             }
             isShow = !isHidePlayerMember ? true : !playerInfoList[i].isChoose;
-            this.playerItemList[i].active = isShow;
+            this.playerItemList[i - 8].active = isShow;
         }
     }
 
