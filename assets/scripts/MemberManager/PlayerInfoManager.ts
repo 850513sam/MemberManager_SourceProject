@@ -1,7 +1,16 @@
 import { _decorator, Component, Button, EditBox, Toggle, randomRangeInt } from 'cc';
-import { Data, PlayerInfo } from './Data';
+import { Data, EPlayerType, PlayerInfo } from './Data';
 import { PlayerListManager } from './PlayerListManager';
 const { ccclass, property } = _decorator;
+
+export class TmpPlayerSetting
+{
+    public name: string = "";
+    public ability: number = 1;
+    public isRegular: boolean = false;
+    public isAttend: boolean = false;
+    public isSpecial: boolean = false;
+}
 
 @ccclass('PlayerInfoManager')
 export class PlayerInfoManager extends Component 
@@ -24,8 +33,14 @@ export class PlayerInfoManager extends Component
     private playerAbility_4: Toggle = null;
     @property(Toggle)
     private playerAbility_5: Toggle = null;
+    @property(Toggle)
+    private btnRegular: Toggle = null;
+    @property(Toggle)
+    private btnAttend: Toggle = null;
+    @property(Toggle)
+    private btnSpecial: Toggle = null;
 
-    private tmpPlayerAbility: number = 1;
+    private tmpPlayerSetting: TmpPlayerSetting = new TmpPlayerSetting();
     private isAddPlayer: boolean = true;
     private editIndex: number = -1;
 
@@ -52,11 +67,29 @@ export class PlayerInfoManager extends Component
         this.playerAbility_3.node.on(Toggle.EventType.CLICK, () => { this.onBtnAbility(3); });
         this.playerAbility_4.node.on(Toggle.EventType.CLICK, () => { this.onBtnAbility(4); });
         this.playerAbility_5.node.on(Toggle.EventType.CLICK, () => { this.onBtnAbility(5); });
+        this.btnRegular.node.on(Toggle.EventType.CLICK, this.onBtnRegular.bind(this));
+        this.btnAttend.node.on(Toggle.EventType.CLICK, this.onBtnAttend.bind(this));
+        this.btnSpecial.node.on(Toggle.EventType.CLICK, this.onBtnSpecial.bind(this));
+    }
+
+    private onBtnRegular()
+    {
+        this.tmpPlayerSetting.isRegular = !this.tmpPlayerSetting.isRegular;
+    }
+    
+    private onBtnAttend()
+    {
+        this.tmpPlayerSetting.isAttend = !this.tmpPlayerSetting.isAttend;
+    }
+    
+    private onBtnSpecial()
+    {
+        this.tmpPlayerSetting.isSpecial = !this.tmpPlayerSetting.isSpecial;        
     }
 
     private onBtnAbility(ability: number)
     {
-        this.tmpPlayerAbility = ability;
+        this.tmpPlayerSetting.ability = ability;
     }
 
     private onBtnClose()
@@ -69,15 +102,16 @@ export class PlayerInfoManager extends Component
         if (this.isAddPlayer)
         {
             const playerInfo: PlayerInfo = new PlayerInfo(Data.playerInfoList.length + 1);
-            playerInfo.playerName = this.playerName.textLabel.string;
-            playerInfo.playerAbility = this.tmpPlayerAbility;
+            playerInfo.name = this.playerName.textLabel.string;
+            playerInfo.ability = this.tmpPlayerSetting.ability;
+            playerInfo.type = EPlayerType.NORMAL;
             Data.playerInfoList.push(playerInfo);
             PlayerListManager.getInstance().addPlayerItem();
         }
         else
         {
-            Data.playerInfoList[this.editIndex].playerName = this.playerName.textLabel.string;
-            Data.playerInfoList[this.editIndex].playerAbility = this.tmpPlayerAbility;
+            Data.playerInfoList[this.editIndex].name = this.playerName.textLabel.string;
+            Data.playerInfoList[this.editIndex].ability = this.tmpPlayerSetting.ability;
         }
         this.close();
     }
@@ -99,23 +133,45 @@ export class PlayerInfoManager extends Component
         this.btnDelete.node.active = !isAdd;
         if (!isAdd)
         {
-            this.editIndex = playerIndex;
-            const playerInfo: PlayerInfo = Data.playerInfoList[playerIndex];
-            this.playerName.string = playerInfo.playerName;
-            this.playerAbility_1.isChecked = playerInfo.playerAbility == 1;
-            this.playerAbility_2.isChecked = playerInfo.playerAbility == 2;
-            this.playerAbility_3.isChecked = playerInfo.playerAbility == 3;
-            this.playerAbility_4.isChecked = playerInfo.playerAbility == 4;
-            this.playerAbility_5.isChecked = playerInfo.playerAbility == 5;
+            this.setUI(playerIndex);
         }
         else
         {
-            this.playerAbility_1.isChecked = true;
-            this.playerAbility_2.isChecked = false;
-            this.playerAbility_3.isChecked = false;
-            this.playerAbility_4.isChecked = false;
-            this.playerAbility_5.isChecked = false;
+            this.initUI();
         }
+    }
+
+    private setUI(playerIndex: number)
+    {
+        this.editIndex = playerIndex;
+        const playerInfo: PlayerInfo = Data.playerInfoList[playerIndex];
+        this.playerName.string = playerInfo.name;
+        this.playerAbility_1.isChecked = playerInfo.ability == 1;
+        this.playerAbility_2.isChecked = playerInfo.ability == 2;
+        this.playerAbility_3.isChecked = playerInfo.ability == 3;
+        this.playerAbility_4.isChecked = playerInfo.ability == 4;
+        this.playerAbility_5.isChecked = playerInfo.ability == 5;
+        this.btnRegular.isChecked = playerInfo.isRegular;
+        this.btnAttend.isChecked = playerInfo.isAttend;
+        this.btnSpecial.isChecked = playerInfo.type == EPlayerType.SPECIAL;
+        this.tmpPlayerSetting.name = playerInfo.name;
+        this.tmpPlayerSetting.ability = playerInfo.ability;
+        this.tmpPlayerSetting.isRegular = playerInfo.isRegular;
+        this.tmpPlayerSetting.isAttend = playerInfo.isAttend;
+        this.tmpPlayerSetting.isSpecial = playerInfo.type == EPlayerType.SPECIAL;
+    }
+
+    private initUI()
+    {
+        this.playerName.textLabel.string = "";            
+        this.playerAbility_1.isChecked = true;
+        this.playerAbility_2.isChecked = false;
+        this.playerAbility_3.isChecked = false;
+        this.playerAbility_4.isChecked = false;
+        this.playerAbility_5.isChecked = false;
+        this.btnRegular.isChecked = false;
+        this.btnAttend.isChecked = false;
+        this.btnSpecial.isChecked = false;
     }
 
     public close()
@@ -126,12 +182,14 @@ export class PlayerInfoManager extends Component
 
     public generateTestData()
     {
+        console.log("add test data !!!");
         for (let i = 0; i < 16; i++)
         // for (let i = 0; i < 8; i++)
         {
             const playerInfo: PlayerInfo = new PlayerInfo(Data.playerInfoList.length + 1);
-            playerInfo.playerName = `Player_${i.toString()}`;
-            playerInfo.playerAbility = randomRangeInt(1, 6);
+            playerInfo.name = `Player_${i.toString()}`;
+            playerInfo.ability = randomRangeInt(1, 6);
+            playerInfo.type = EPlayerType.NORMAL;
             Data.playerInfoList.push(playerInfo);
             PlayerListManager.getInstance().addPlayerItem();
         }

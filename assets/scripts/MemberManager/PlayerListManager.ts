@@ -1,5 +1,5 @@
 import { _decorator, Component, Node, Prefab, Button, UITransform, instantiate, ScrollView } from 'cc';
-import { Data, PlayerInfo } from './Data';
+import { Data, EPlayerType, PlayerInfo } from './Data';
 import { PlayerInfoManager } from './PlayerInfoManager';
 import { PlayerItem } from './PlayerItem';
 const { ccclass, property } = _decorator;
@@ -30,7 +30,10 @@ export class PlayerListManager extends Component
         PlayerListManager.instance = this;
         this.close();
         this.btnClose.node.on(Button.EventType.CLICK, this.onBtnClose.bind(this));
-        // PlayerInfoManager.getInstance().generateTestData();
+        setTimeout(() => 
+        {            
+            // PlayerInfoManager.getInstance().generateTestData();
+        }, 100);
     }
 
     private onBtnClose()
@@ -45,7 +48,7 @@ export class PlayerListManager extends Component
         this.scroll.scrollToTop();
         this.playerItemList.forEach((playerItem: Node, i) => 
         {
-            const completeMatchCount: number = Data.playerInfoList[i].completeMatchCount;
+            const completeMatchCount: number = Data.playerInfoList[i + 8].completeMatchCount;
             playerItem.getComponent(PlayerItem).updateMatchCompleteCount(completeMatchCount);
         });
     }
@@ -61,7 +64,7 @@ export class PlayerListManager extends Component
         let isShow: boolean = false;
         for (let i = 0; i < playerInfoList.length; i++)
         {
-            if (playerInfoList[i].isDefaultPlayer)
+            if (playerInfoList[i].type == EPlayerType.DEFAULT)
             {
                 continue;
             }
@@ -74,7 +77,7 @@ export class PlayerListManager extends Component
     {
         const playerInfoList: PlayerInfo[] = Data.playerInfoList;
         const playerCount: number = playerInfoList.length;
-        const playerName: string = playerInfoList[playerCount - 1].playerName;
+        const playerName: string = playerInfoList[playerCount - 1].name;
         const playerItem: Node = instantiate(this.playerItem);
         playerItem.setParent(this.playerItemRoot.node);
         playerItem.getComponent(PlayerItem).setPlayerInfo(playerName, playerInfoList.length - 1);

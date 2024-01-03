@@ -49,12 +49,12 @@ export class MatchManager extends Component
         let weakestPlayer: PlayerInfo = players[0];
         for (let i = 1; i < players.length; i++)
         {
-            if (players[i].playerAbility >= strongestPlayer.playerAbility)
+            if (players[i].ability >= strongestPlayer.ability)
             {
                 strongestPlayer = players[i];
             }
 
-            if (players[i].playerAbility <= weakestPlayer.playerAbility)
+            if (players[i].ability <= weakestPlayer.ability)
             {
                 weakestPlayer = players[i];
             }
@@ -89,7 +89,7 @@ export class MatchManager extends Component
             {
                 //return fake player
                 player = new PlayerInfo(-1, true);
-                player.playerName = "";
+                player.name = "";
             }
         }
         else
@@ -134,7 +134,7 @@ export class MatchManager extends Component
         for (let i = 0; i < playerInfoList.length; i++)
         {
             player = playerInfoList[i];
-            if (player.playerName == "")
+            if (player.name == "")
             {
                 const removeIndex: number = playerInfoList.indexOf(player);
                 playerInfoList.splice(removeIndex, 1);

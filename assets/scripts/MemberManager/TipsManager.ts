@@ -4,6 +4,8 @@ const { ccclass, property } = _decorator;
 export enum EMsgCode
 {
     PLAYER_STATUS_ERROR,
+    FIND_DATA,
+    SAVE_SUCCESSFUL,
 }
 
 @ccclass('TipsManager')
@@ -39,18 +41,22 @@ export class TipsManager extends Component
 
     private getMsg(msgCode: EMsgCode): string
     { 
-        switch (msgCode)
+        switch (msgCode) 
         {
             case EMsgCode.PLAYER_STATUS_ERROR:
                 return "人員狀態錯誤";
+            case EMsgCode.FIND_DATA:
+                return "偵測到儲存資料";
+            case EMsgCode.SAVE_SUCCESSFUL:
+                return "儲存成功";
         }
     }
 
-    public open(msgCode: EMsgCode, errorPlayer: string)
+    public open(msgCode: EMsgCode, content: string = "")
     {
         this.node.active = true;
         this.title.string = this.getMsg(msgCode);
-        this.content.string = errorPlayer;
+        this.content.string = content;
     }
     
     private close()

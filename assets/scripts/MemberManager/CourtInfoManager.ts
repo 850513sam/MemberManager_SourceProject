@@ -1,5 +1,5 @@
 import { _decorator, Component, Button, EditBox, Label } from 'cc';
-import { CheckData, CourtInfo, Data, PlayerInfo } from './Data';
+import { CheckData, CourtInfo, Data, EPlayerType, PlayerInfo } from './Data';
 import { MainUI } from './MainUI';
 import { MatchManager } from './MatchManager';
 import { PlayerListManager } from './PlayerListManager';
@@ -142,15 +142,15 @@ export class CourtInfoManager extends Component
     {
         const checkData: CheckData = new CheckData();
         const courtInfoList: CourtInfo = Data.courtInfoList[this.editCourtIndex];
-        const isA1CanPlay: boolean = !courtInfoList.teamA[0].isDefaultPlayer && !courtInfoList.teamA[0].isPlaying;
-        const isA2CanPlay: boolean = !courtInfoList.teamA[1].isDefaultPlayer && !courtInfoList.teamA[1].isPlaying;
-        const isB1CanPlay: boolean = !courtInfoList.teamB[0].isDefaultPlayer && !courtInfoList.teamB[0].isPlaying;
-        const isB2CanPlay: boolean = !courtInfoList.teamB[1].isDefaultPlayer && !courtInfoList.teamB[1].isPlaying;
+        const isA1CanPlay: boolean = courtInfoList.teamA[0].type != EPlayerType.DEFAULT && !courtInfoList.teamA[0].isPlaying;
+        const isA2CanPlay: boolean = courtInfoList.teamA[1].type != EPlayerType.DEFAULT && !courtInfoList.teamA[1].isPlaying;
+        const isB1CanPlay: boolean = courtInfoList.teamB[0].type != EPlayerType.DEFAULT && !courtInfoList.teamB[0].isPlaying;
+        const isB2CanPlay: boolean = courtInfoList.teamB[1].type != EPlayerType.DEFAULT && !courtInfoList.teamB[1].isPlaying;
         checkData.isCanStart = isA1CanPlay && isA2CanPlay && isB1CanPlay && isB2CanPlay;
-        checkData.errorPlayer += !isA1CanPlay ? `${courtInfoList.teamA[0].playerName}, ` : "";
-        checkData.errorPlayer += !isA2CanPlay ? `${courtInfoList.teamA[1].playerName}, ` : "";
-        checkData.errorPlayer += !isB1CanPlay ? `${courtInfoList.teamB[0].playerName}, ` : "";
-        checkData.errorPlayer += !isB2CanPlay ? `${courtInfoList.teamB[1].playerName}` : "";
+        checkData.errorPlayer += !isA1CanPlay ? `${courtInfoList.teamA[0].name}, ` : "";
+        checkData.errorPlayer += !isA2CanPlay ? `${courtInfoList.teamA[1].name}, ` : "";
+        checkData.errorPlayer += !isB1CanPlay ? `${courtInfoList.teamB[0].name}, ` : "";
+        checkData.errorPlayer += !isB2CanPlay ? `${courtInfoList.teamB[1].name}` : "";
         return checkData;
     }
 
@@ -169,8 +169,8 @@ export class CourtInfoManager extends Component
         const playerB2: PlayerInfo = this.nextMatchPlayers[1][1];
         const teamARepeatTimes: number = this.getRepeatTimes(this.nextMatchPlayers[0]);
         const teamBRepeatTimes: number = this.getRepeatTimes(this.nextMatchPlayers[1]);
-        const teamAInfo: string = `${playerA1.playerName} (${playerA1.playerAbility}) + ${playerA2.playerName} (${playerA2.playerAbility})`;
-        const teamBInfo: string = `${playerB1.playerName} (${playerB1.playerAbility}) + ${playerB2.playerName} (${playerB2.playerAbility})`;
+        const teamAInfo: string = `${playerA1.name} (${playerA1.ability}) + ${playerA2.name} (${playerA2.ability})`;
+        const teamBInfo: string = `${playerB1.name} (${playerB1.ability}) + ${playerB2.name} (${playerB2.ability})`;
         this.nextMatchInfo.string = `${teamAInfo} 重複次數 : ${teamARepeatTimes}\nvs\n${teamBInfo} 重複次數 : ${teamBRepeatTimes}`;
         Data.courtInfoList[this.editCourtIndex].nextMatchPlayers = this.nextMatchPlayers;
         Data.courtInfoList[this.editCourtIndex].nextMatchInfo = this.nextMatchInfo.string;
@@ -182,9 +182,9 @@ export class CourtInfoManager extends Component
         const teamRecordList: PlayerInfo[][] = Data.teamRecordList;
         teamRecordList.forEach((teamRecord: PlayerInfo[]) => 
         {
-            if (teamRecord[0].playerIndex == team[0].playerIndex || teamRecord[0].playerIndex == team[1].playerIndex)
+            if (teamRecord[0].index == team[0].index || teamRecord[0].index == team[1].index)
             {
-                if (teamRecord[1].playerIndex == team[0].playerIndex || teamRecord[1].playerIndex == team[1].playerIndex)
+                if (teamRecord[1].index == team[0].index || teamRecord[1].index == team[1].index)
                 {
                     repeatTimes++;
                 }
@@ -236,6 +236,10 @@ export class CourtInfoManager extends Component
         Data.courtInfoList[this.editCourtIndex].teamA[1].completeMatchCount++;
         Data.courtInfoList[this.editCourtIndex].teamB[0].completeMatchCount++;
         Data.courtInfoList[this.editCourtIndex].teamB[1].completeMatchCount++;
+        Data.courtInfoList[this.editCourtIndex].teamA[0].isChoose = false;
+        Data.courtInfoList[this.editCourtIndex].teamA[1].isChoose = false;
+        Data.courtInfoList[this.editCourtIndex].teamB[0].isChoose = false;
+        Data.courtInfoList[this.editCourtIndex].teamB[1].isChoose = false;
         Data.courtInfoList[this.editCourtIndex].teamA = [Data[`defaultPlayer_${this.editCourtIndex}_0`], Data[`defaultPlayer_${this.editCourtIndex}_1`]];
         Data.courtInfoList[this.editCourtIndex].teamB = [Data[`defaultPlayer_${this.editCourtIndex}_2`], Data[`defaultPlayer_${this.editCourtIndex}_3`]];
     }
@@ -282,27 +286,28 @@ export class CourtInfoManager extends Component
 
     public setNewPlayer(playerInfo: PlayerInfo)
     {
+        playerInfo.isChoose = true;
         switch (this.editPlayerIndex)
         {
             case 0:
                 Data.courtInfoList[this.editCourtIndex].teamA[0].isChoose = false;
                 Data.courtInfoList[this.editCourtIndex].teamA[0] = playerInfo;
-                this.playerName_a1.string = playerInfo.playerName;
+                this.playerName_a1.string = playerInfo.name;
                 break;
             case 1:
                 Data.courtInfoList[this.editCourtIndex].teamA[1].isChoose = false;
                 Data.courtInfoList[this.editCourtIndex].teamA[1] = playerInfo;
-                this.playerName_a2.string = playerInfo.playerName;
+                this.playerName_a2.string = playerInfo.name;
                 break;
             case 2:
                 Data.courtInfoList[this.editCourtIndex].teamB[0].isChoose = false;
                 Data.courtInfoList[this.editCourtIndex].teamB[0] = playerInfo;
-                this.playerName_b1.string = playerInfo.playerName;
+                this.playerName_b1.string = playerInfo.name;
                 break;
             case 3:
                 Data.courtInfoList[this.editCourtIndex].teamB[1].isChoose = false;
                 Data.courtInfoList[this.editCourtIndex].teamB[1] = playerInfo;
-                this.playerName_b2.string = playerInfo.playerName;
+                this.playerName_b2.string = playerInfo.name;
                 break;
         }
     }
@@ -349,10 +354,10 @@ export class CourtInfoManager extends Component
     {
         const courtInfo: CourtInfo = Data.courtInfoList[courtIndex];
         this.courtName.string = courtInfo.courtName;
-        this.playerName_a1.string = courtInfo.teamA[0].playerName;
-        this.playerName_a2.string = courtInfo.teamA[1].playerName;
-        this.playerName_b1.string = courtInfo.teamB[0].playerName;
-        this.playerName_b2.string = courtInfo.teamB[1].playerName;
+        this.playerName_a1.string = courtInfo.teamA[0].name;
+        this.playerName_a2.string = courtInfo.teamA[1].name;
+        this.playerName_b1.string = courtInfo.teamB[0].name;
+        this.playerName_b2.string = courtInfo.teamB[1].name;
         this.nextMatchInfo.string = Data.courtInfoList[this.editCourtIndex].nextMatchInfo;
         this.nextMatchPlayers = Data.courtInfoList[this.editCourtIndex].nextMatchPlayers;
     }

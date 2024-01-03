@@ -3,6 +3,7 @@ import Application from '../../Application/Application';
 
 export enum StoragePath {
     AudioSetting = 'AudioSetting',
+    MemberSetting = "MemberSetting",
 }
 
 namespace StorageHelper {
@@ -21,6 +22,10 @@ namespace StorageHelper {
             warn(error);
             return null;
         }
+    }
+
+    export function clearLoal() {
+        localStorage.clear();
     }
 }
 
