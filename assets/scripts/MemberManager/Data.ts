@@ -23,11 +23,11 @@ export class PlayerInfo
     public type: EPlayerType = EPlayerType.DEFAULT;
     public isPlaying: boolean = false;
     public isChoose: boolean = false;
-    public isAttend: boolean = true;
+    public isAttend: boolean = false;
     public isRegular: boolean = false;
     public completeMatchCount: number = 0;
 
-    public constructor(playerIndex: number)
+    public constructor(playerIndex: number = -1)
     {
         this.index = playerIndex;
     }
@@ -50,15 +50,15 @@ export class Data
     public static playerInfoList: PlayerInfo[] = [];
     public static courtInfoList: CourtInfo[] = [];
 
-    public static readonly defaultPlayer_0_0: PlayerInfo = new PlayerInfo(-1);
-    public static readonly defaultPlayer_0_1: PlayerInfo = new PlayerInfo(-1);
-    public static readonly defaultPlayer_0_2: PlayerInfo = new PlayerInfo(-1);
-    public static readonly defaultPlayer_0_3: PlayerInfo = new PlayerInfo(-1);
+    public static readonly defaultPlayer_0_0: PlayerInfo = new PlayerInfo();
+    public static readonly defaultPlayer_0_1: PlayerInfo = new PlayerInfo();
+    public static readonly defaultPlayer_0_2: PlayerInfo = new PlayerInfo();
+    public static readonly defaultPlayer_0_3: PlayerInfo = new PlayerInfo();
 
-    public static readonly defaultPlayer_1_0: PlayerInfo = new PlayerInfo(-1);
-    public static readonly defaultPlayer_1_1: PlayerInfo = new PlayerInfo(-1);
-    public static readonly defaultPlayer_1_2: PlayerInfo = new PlayerInfo(-1);
-    public static readonly defaultPlayer_1_3: PlayerInfo = new PlayerInfo(-1);
+    public static readonly defaultPlayer_1_0: PlayerInfo = new PlayerInfo();
+    public static readonly defaultPlayer_1_1: PlayerInfo = new PlayerInfo();
+    public static readonly defaultPlayer_1_2: PlayerInfo = new PlayerInfo();
+    public static readonly defaultPlayer_1_3: PlayerInfo = new PlayerInfo();
 
     public static teamRecordList: PlayerInfo[][] = [];
 }

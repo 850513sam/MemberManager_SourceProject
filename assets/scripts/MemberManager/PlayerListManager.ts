@@ -33,7 +33,7 @@ export class PlayerListManager extends Component
         setTimeout(() => 
         {            
             // PlayerInfoManager.getInstance().generateTestData();
-        }, 100);
+        }, 200);
     }
 
     private onBtnClose()
@@ -41,24 +41,14 @@ export class PlayerListManager extends Component
         this.close();
     }
 
-    public open(isHidePlayerMember: boolean)
+    public open(isHidePlayingMember: boolean)
     {
         this.node.active = true;
-        this.updatePlayerStatus(isHidePlayerMember);
         this.scroll.scrollToTop();
-        this.playerItemList.forEach((playerItem: Node, i) => 
-        {
-            const completeMatchCount: number = Data.playerInfoList[i + 8].completeMatchCount;
-            playerItem.getComponent(PlayerItem).updateMatchCompleteCount(completeMatchCount);
-        });
+        this.updatePlayerInfo(isHidePlayingMember);
     }
 
-    public close()
-    {
-        this.node.active = false;
-    }
-
-    private updatePlayerStatus(isHidePlayerMember: boolean)
+    private updatePlayerInfo(isHidePlayerMember: boolean)
     {
         const playerInfoList: PlayerInfo[] = Data.playerInfoList;
         let isShow: boolean = false;
@@ -70,7 +60,13 @@ export class PlayerListManager extends Component
             }
             isShow = !isHidePlayerMember ? true : !playerInfoList[i].isChoose;
             this.playerItemList[i - 8].active = isShow;
+            this.playerItemList[i - 8].getComponent(PlayerItem).updatePlayerInfo(playerInfoList[i]);
         }
+    }
+
+    public close()
+    {
+        this.node.active = false;
     }
 
     public addPlayerItem()
@@ -86,7 +82,7 @@ export class PlayerListManager extends Component
 
     public deletePlayer(playerIndex: number)
     {
-        const deletePlayer: Node = this.playerItemList[playerIndex];
+        const deletePlayer: Node = this.playerItemList[playerIndex - 8];
         this.playerItemList.splice(playerIndex, 1);
         this.playerItemRoot.node.removeChild(deletePlayer);
     }

@@ -24,7 +24,7 @@ namespace StorageHelper {
         }
     }
 
-    export function clearLoal() {
+    export function clearLocal() {
         localStorage.clear();
     }
 }

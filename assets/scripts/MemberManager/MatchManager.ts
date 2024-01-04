@@ -1,11 +1,12 @@
 import { _decorator, Component, randomRangeInt } from 'cc';
-import { Data, PlayerInfo } from './Data';
+import { Data, EPlayerType, PlayerInfo } from './Data';
 const { ccclass, property } = _decorator;
 
 @ccclass('MatchManager')
 export class MatchManager extends Component 
 {
     private restingPlayers: PlayerInfo[] = [];
+    private playingPlayers: PlayerInfo[] = [];
     private needToPlayList: PlayerInfo[] = [];
 
     private static instance: MatchManager = null;
@@ -26,8 +27,7 @@ export class MatchManager extends Component
         const nextMatchPlayers: PlayerInfo[][] = [teamA, teamB];
         let tmpNextMatchPlayers: PlayerInfo[] = [];
         let nextPlayer: PlayerInfo = null;
-        this.clearFakePlayer();
-        this.updateRestingPlyers();
+        this.updatePlayerStatus();
         this.updateNeedToPlayList();
         for (let i = 0; i < 4; i++)
         {
@@ -46,15 +46,14 @@ export class MatchManager extends Component
     {
         let newTeam: PlayerInfo[] = [];
         let strongestPlayer: PlayerInfo = players[0];
-        let weakestPlayer: PlayerInfo = players[0];
-        for (let i = 1; i < players.length; i++)
+        let weakestPlayer: PlayerInfo = players[1];
+        for (let i = 0; i < players.length; i++)
         {
-            if (players[i].ability >= strongestPlayer.ability)
+            if (players[i].ability > strongestPlayer.ability)
             {
                 strongestPlayer = players[i];
             }
-
-            if (players[i].ability <= weakestPlayer.ability)
+            if (players[i].ability < weakestPlayer.ability)
             {
                 weakestPlayer = players[i];
             }
@@ -77,7 +76,12 @@ export class MatchManager extends Component
         {
             player = this.needToPlayList[randomRangeInt(0, this.needToPlayList.length)];
         }
-        if (!player)
+        if (player)
+        {
+            removeIndex = this.needToPlayList.indexOf(player);
+            this.needToPlayList.splice(removeIndex, 1);            
+        }
+        else
         {
             player = this.restingPlayers[randomRangeInt(0, this.restingPlayers.length)];
             if (player)
@@ -87,15 +91,10 @@ export class MatchManager extends Component
             }
             else
             {
-                //return fake player
-                player = new PlayerInfo(-1, true);
-                player.name = "";
+                player = this.playingPlayers[randomRangeInt(0, this.playingPlayers.length)];
+                removeIndex = this.playingPlayers.indexOf(player);
+                this.playingPlayers.splice(removeIndex, 1);
             }
-        }
-        else
-        {
-            removeIndex = this.needToPlayList.indexOf(player);
-            this.needToPlayList.splice(removeIndex, 1);
         }
         return player;
     }
@@ -112,34 +111,20 @@ export class MatchManager extends Component
         }
     }
 
-    private updateRestingPlyers()
+    private updatePlayerStatus()
     {
-        const restingPlayers: PlayerInfo[] = [];
         const playerInfoList: PlayerInfo[] = Data.playerInfoList;
+        let playerList: PlayerInfo[] = [];
         this.restingPlayers = [];
+        this.playingPlayers = [];
         playerInfoList.forEach((playerInfo: PlayerInfo) => 
         {
-            if (!playerInfo.isPlaying && !playerInfo.isDefaultPlayer)
+            if (playerInfo.type == EPlayerType.NORMAL)
             {
-                restingPlayers.push(playerInfo);
+                playerList = playerInfo.isPlaying ? this.playingPlayers : this.restingPlayers;
+                playerList.push(playerInfo);
             }
         });
-        this.restingPlayers = restingPlayers;
-    }
-
-    private clearFakePlayer()
-    {
-        const playerInfoList: PlayerInfo[] = Data.playerInfoList;
-        let player: PlayerInfo = null;
-        for (let i = 0; i < playerInfoList.length; i++)
-        {
-            player = playerInfoList[i];
-            if (player.name == "")
-            {
-                const removeIndex: number = playerInfoList.indexOf(player);
-                playerInfoList.splice(removeIndex, 1);
-            }
-        }
     }
 
     private getIsNeedToPlay(playerIndex: number): boolean

@@ -130,7 +130,8 @@ export class MainUI extends Component
 
     private onBtnClear()
     {
-        StorageHelper.clearLoal();
+        StorageHelper.clearLocal();
+        TipsManager.getInstance().open(EMsgCode.CLEAR_SUCCESSFUL);
     }
     
     private onBtnSetCourt(courtIndex: number)

@@ -43,8 +43,9 @@ export class PlayerItem extends Component
         this.playerIndex = playerIndex;
     }
 
-    public updateMatchCompleteCount(count: number)
+    public updatePlayerInfo(playerInfo: PlayerInfo)
     {
-        this.completeMatchCount.string = count.toString();
+        this.playerName.string = playerInfo.name;
+        this.completeMatchCount.string = playerInfo.completeMatchCount.toString();
     }
 }

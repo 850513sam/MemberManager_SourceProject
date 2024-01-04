@@ -6,6 +6,7 @@ export enum EMsgCode
     PLAYER_STATUS_ERROR,
     FIND_DATA,
     SAVE_SUCCESSFUL,
+    CLEAR_SUCCESSFUL,
 }
 
 @ccclass('TipsManager')
@@ -49,6 +50,8 @@ export class TipsManager extends Component
                 return "偵測到儲存資料";
             case EMsgCode.SAVE_SUCCESSFUL:
                 return "儲存成功";
+            case EMsgCode.CLEAR_SUCCESSFUL:
+                return "清除成功";
         }
     }
 

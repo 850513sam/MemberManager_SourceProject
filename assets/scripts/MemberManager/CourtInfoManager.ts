@@ -208,11 +208,16 @@ export class CourtInfoManager extends Component
         {
             btn.interactable = enable;
         });
+        if (this.nextMatchPlayers.length == 0)
+        {
+            this.btnSet.interactable = false;
+        }
     }
 
     private onBtnRefresh()
     {
         this.updateNextMatchInfo();
+        this.btnSet.interactable = true;
     }
 
     private onBtnEnd()
@@ -312,9 +317,29 @@ export class CourtInfoManager extends Component
         }
     }
 
+    private updateAutoMatchBtnStatus()
+    {
+        if (this.getIsPlayerEmpty())
+        {
+            
+        }
+    }
+
+    private getIsPlayerEmpty(): boolean
+    {
+        const courtInfo: CourtInfo = Data.courtInfoList[this.editCourtIndex];
+        const isPlayerEmpty = 
+        courtInfo.teamA[0].type == EPlayerType.DEFAULT || 
+        courtInfo.teamA[1].type == EPlayerType.DEFAULT ||
+        courtInfo.teamB[0].type == EPlayerType.DEFAULT ||
+        courtInfo.teamB[1].type == EPlayerType.DEFAULT;
+        return isPlayerEmpty;
+    }
+
     private init()
     {
         this.btnEnd.interactable = false;
+        this.btnSet.interactable = false;
         this.editBtnGroup.push(this.btnPlayer_a1);
         this.editBtnGroup.push(this.btnPlayer_a2);
         this.editBtnGroup.push(this.btnPlayer_b1);

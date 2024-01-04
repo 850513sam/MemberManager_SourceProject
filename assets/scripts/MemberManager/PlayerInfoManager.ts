@@ -40,7 +40,7 @@ export class PlayerInfoManager extends Component
     @property(Toggle)
     private btnSpecial: Toggle = null;
 
-    private tmpPlayerSetting: TmpPlayerSetting = new TmpPlayerSetting();
+    private tmpPlayerSetting: PlayerInfo = new PlayerInfo();
     private isAddPlayer: boolean = true;
     private editIndex: number = -1;
 
@@ -84,7 +84,7 @@ export class PlayerInfoManager extends Component
     
     private onBtnSpecial()
     {
-        this.tmpPlayerSetting.isSpecial = !this.tmpPlayerSetting.isSpecial;        
+        this.tmpPlayerSetting.type = EPlayerType.SPECIAL;
     }
 
     private onBtnAbility(ability: number)
@@ -104,7 +104,7 @@ export class PlayerInfoManager extends Component
             const playerInfo: PlayerInfo = new PlayerInfo(Data.playerInfoList.length + 1);
             playerInfo.name = this.playerName.textLabel.string;
             playerInfo.ability = this.tmpPlayerSetting.ability;
-            playerInfo.type = EPlayerType.NORMAL;
+            playerInfo.type = this.btnSpecial.isChecked ? EPlayerType.SPECIAL : EPlayerType.NORMAL;
             Data.playerInfoList.push(playerInfo);
             PlayerListManager.getInstance().addPlayerItem();
         }
@@ -129,7 +129,7 @@ export class PlayerInfoManager extends Component
     public open(isAdd: boolean = true, playerIndex: number = 0)
     {
         this.node.active = true;
-        this.isAddPlayer = true;
+        this.isAddPlayer = isAdd;
         this.btnDelete.node.active = !isAdd;
         if (!isAdd)
         {
@@ -154,16 +154,13 @@ export class PlayerInfoManager extends Component
         this.btnRegular.isChecked = playerInfo.isRegular;
         this.btnAttend.isChecked = playerInfo.isAttend;
         this.btnSpecial.isChecked = playerInfo.type == EPlayerType.SPECIAL;
-        this.tmpPlayerSetting.name = playerInfo.name;
-        this.tmpPlayerSetting.ability = playerInfo.ability;
-        this.tmpPlayerSetting.isRegular = playerInfo.isRegular;
-        this.tmpPlayerSetting.isAttend = playerInfo.isAttend;
-        this.tmpPlayerSetting.isSpecial = playerInfo.type == EPlayerType.SPECIAL;
+        this.tmpPlayerSetting = playerInfo;
     }
 
     private initUI()
     {
-        this.playerName.textLabel.string = "";            
+        this.tmpPlayerSetting = new PlayerInfo();
+        this.playerName.textLabel.string = "";
         this.playerAbility_1.isChecked = true;
         this.playerAbility_2.isChecked = false;
         this.playerAbility_3.isChecked = false;
@@ -183,12 +180,12 @@ export class PlayerInfoManager extends Component
     public generateTestData()
     {
         console.log("add test data !!!");
-        for (let i = 0; i < 16; i++)
-        // for (let i = 0; i < 8; i++)
+        for (let i = 0; i < 5; i++)
         {
             const playerInfo: PlayerInfo = new PlayerInfo(Data.playerInfoList.length + 1);
             playerInfo.name = `Player_${i.toString()}`;
-            playerInfo.ability = randomRangeInt(1, 6);
+            // playerInfo.ability = randomRangeInt(1, 6);
+            playerInfo.ability = 1;
             playerInfo.type = EPlayerType.NORMAL;
             Data.playerInfoList.push(playerInfo);
             PlayerListManager.getInstance().addPlayerItem();
