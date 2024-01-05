@@ -44,8 +44,8 @@ export class PlayerListManager extends Component
     public open(isHidePlayingMember: boolean)
     {
         this.node.active = true;
-        this.scroll.scrollToTop();
         this.updatePlayerInfo(isHidePlayingMember);
+        this.scroll.scrollToTop();
     }
 
     private updatePlayerInfo(isHidePlayerMember: boolean)

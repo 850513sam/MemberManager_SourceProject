@@ -216,6 +216,10 @@ export class CourtInfoManager extends Component
 
     private onBtnRefresh()
     {
+        if (Data.playerInfoList.length < 12)
+        {
+            return;
+        }
         this.updateNextMatchInfo();
         this.btnSet.interactable = true;
     }
@@ -264,6 +268,7 @@ export class CourtInfoManager extends Component
     private onBtnPlayer(editPlayerIndex: number)
     {
         this.editPlayerIndex = editPlayerIndex;
+        this.onBtnClear(editPlayerIndex);
         PlayerListManager.getInstance().open(true);
     }
 

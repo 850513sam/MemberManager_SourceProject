@@ -180,7 +180,7 @@ export class PlayerInfoManager extends Component
     public generateTestData()
     {
         console.log("add test data !!!");
-        for (let i = 0; i < 5; i++)
+        for (let i = 0; i < 15; i++)
         {
             const playerInfo: PlayerInfo = new PlayerInfo(Data.playerInfoList.length + 1);
             playerInfo.name = `Player_${i.toString()}`;

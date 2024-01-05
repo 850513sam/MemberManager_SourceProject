@@ -11519,7 +11519,7 @@
         "__id__": 305
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 308
@@ -12605,7 +12605,7 @@
         "__id__": 333
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 336
@@ -13796,7 +13796,7 @@
         "__id__": 364
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 367
@@ -14882,7 +14882,7 @@
         "__id__": 392
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 395
@@ -18397,7 +18397,7 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "version": "0.0.3",
+    "version": "0.0.4",
     "versionLabel": {
       "__id__": 9
     },
