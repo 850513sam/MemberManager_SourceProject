@@ -33,15 +33,6 @@ export class CourtInfoManager extends Component
     private playerName_b2: Label = null;
 
     @property(Button)
-    private btnClear_a1: Button = null;
-    @property(Button)
-    private btnClear_a2: Button = null;
-    @property(Button)
-    private btnClear_b1: Button = null;
-    @property(Button)
-    private btnClear_b2: Button = null;
-
-    @property(Button)
     private btnStart: Button = null;
     @property(Button)
     private btnEnd: Button = null;
@@ -109,10 +100,6 @@ export class CourtInfoManager extends Component
         this.btnPlayer_a2.node.on(Button.EventType.CLICK, () => { this.onBtnPlayer(1); });
         this.btnPlayer_b1.node.on(Button.EventType.CLICK, () => { this.onBtnPlayer(2); });
         this.btnPlayer_b2.node.on(Button.EventType.CLICK, () => { this.onBtnPlayer(3); });
-        this.btnClear_a1.node.on(Button.EventType.CLICK, () => { this.onBtnClear(0); });
-        this.btnClear_a2.node.on(Button.EventType.CLICK, () => { this.onBtnClear(1); });
-        this.btnClear_b1.node.on(Button.EventType.CLICK, () => { this.onBtnClear(2); });
-        this.btnClear_b2.node.on(Button.EventType.CLICK, () => { this.onBtnClear(3); });
     }
 
     private onBtnClose()
@@ -233,7 +220,7 @@ export class CourtInfoManager extends Component
         MainUI.getInstance().updateCourtInfo(this.editCourtIndex);
         for (let i = 0; i < 4; i++)
         {
-            this.onBtnClear(i);
+            this.resetPlayerData(i);
         }
     }
 
@@ -268,11 +255,11 @@ export class CourtInfoManager extends Component
     private onBtnPlayer(editPlayerIndex: number)
     {
         this.editPlayerIndex = editPlayerIndex;
-        this.onBtnClear(editPlayerIndex);
+        this.resetPlayerData(editPlayerIndex);
         PlayerListManager.getInstance().open(true);
     }
 
-    private onBtnClear(editPlayerIndex: number)
+    private resetPlayerData(editPlayerIndex: number)
     {
         this.editPlayerIndex = editPlayerIndex;
         let defaultPlayer: PlayerInfo = null;
@@ -349,10 +336,6 @@ export class CourtInfoManager extends Component
         this.editBtnGroup.push(this.btnPlayer_a2);
         this.editBtnGroup.push(this.btnPlayer_b1);
         this.editBtnGroup.push(this.btnPlayer_b2);
-        this.editBtnGroup.push(this.btnClear_a1);
-        this.editBtnGroup.push(this.btnClear_a2);
-        this.editBtnGroup.push(this.btnClear_b1);
-        this.editBtnGroup.push(this.btnClear_b2);
         this.editBtnGroup.push(this.btnSet);
         MainUI.getInstance().updateCourtInfo(0);
         MainUI.getInstance().updateCourtInfo(1);

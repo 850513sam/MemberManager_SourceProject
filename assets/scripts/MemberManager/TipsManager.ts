@@ -7,13 +7,14 @@ export enum EMsgCode
     FIND_DATA,
     SAVE_SUCCESSFUL,
     CLEAR_SUCCESSFUL,
+    NAME_EMPTY,
 }
 
 @ccclass('TipsManager')
 export class TipsManager extends Component 
 {
     @property(Button)
-    private btnClose: Button = null;
+    private btnConfirm: Button = null;
     @property(Label)
     private title: Label = null;
     @property(Label)
@@ -29,10 +30,10 @@ export class TipsManager extends Component
     {
         TipsManager.instance = this;
         this.close();
-        this.btnClose.node.on(Button.EventType.CLICK, this.onBtnClose.bind(this));
+        this.btnConfirm.node.on(Button.EventType.CLICK, this.onBtnConfirm.bind(this));
     }
 
-    private onBtnClose()
+    private onBtnConfirm()
     {
         this.close();
         this.title.string = "";
@@ -52,14 +53,16 @@ export class TipsManager extends Component
                 return "儲存成功";
             case EMsgCode.CLEAR_SUCCESSFUL:
                 return "清除成功";
+            case EMsgCode.NAME_EMPTY:
+                return "姓名不可為空";
         }
     }
 
-    public open(msgCode: EMsgCode, content: string = "")
+    public open(msgCode: EMsgCode, customizedContent: string = "")
     {
         this.node.active = true;
         this.title.string = this.getMsg(msgCode);
-        this.content.string = content;
+        this.content.string = customizedContent;
     }
     
     private close()

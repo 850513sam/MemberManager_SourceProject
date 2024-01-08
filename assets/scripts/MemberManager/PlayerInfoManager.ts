@@ -1,6 +1,8 @@
 import { _decorator, Component, Button, EditBox, Toggle, randomRangeInt } from 'cc';
 import { Data, EPlayerType, PlayerInfo } from './Data';
 import { PlayerListManager } from './PlayerListManager';
+import { tween } from 'cc';
+import { EMsgCode, TipsManager } from './TipsManager';
 const { ccclass, property } = _decorator;
 
 export class TmpPlayerSetting
@@ -34,10 +36,6 @@ export class PlayerInfoManager extends Component
     @property(Toggle)
     private playerAbility_5: Toggle = null;
     @property(Toggle)
-    private btnRegular: Toggle = null;
-    @property(Toggle)
-    private btnAttend: Toggle = null;
-    @property(Toggle)
     private btnSpecial: Toggle = null;
 
     private tmpPlayerSetting: PlayerInfo = new PlayerInfo();
@@ -67,24 +65,21 @@ export class PlayerInfoManager extends Component
         this.playerAbility_3.node.on(Toggle.EventType.CLICK, () => { this.onBtnAbility(3); });
         this.playerAbility_4.node.on(Toggle.EventType.CLICK, () => { this.onBtnAbility(4); });
         this.playerAbility_5.node.on(Toggle.EventType.CLICK, () => { this.onBtnAbility(5); });
-        this.btnRegular.node.on(Toggle.EventType.CLICK, this.onBtnRegular.bind(this));
-        this.btnAttend.node.on(Toggle.EventType.CLICK, this.onBtnAttend.bind(this));
         this.btnSpecial.node.on(Toggle.EventType.CLICK, this.onBtnSpecial.bind(this));
-    }
-
-    private onBtnRegular()
-    {
-        this.tmpPlayerSetting.isRegular = !this.tmpPlayerSetting.isRegular;
-    }
-    
-    private onBtnAttend()
-    {
-        this.tmpPlayerSetting.isAttend = !this.tmpPlayerSetting.isAttend;
     }
     
     private onBtnSpecial()
     {
-        this.tmpPlayerSetting.type = EPlayerType.SPECIAL;
+        if (this.isAddPlayer)
+        {
+            tween(this).delay(0.05).call(() => 
+            {
+                this.tmpPlayerSetting.type = this.btnSpecial.isChecked ? EPlayerType.SPECIAL : EPlayerType.NORMAL;
+            }).start();
+            return;
+        }
+        const isSpecial: boolean = Data.playerInfoList[this.editIndex].type == EPlayerType.SPECIAL;
+        this.tmpPlayerSetting.type = isSpecial ? EPlayerType.NORMAL : EPlayerType.SPECIAL;
     }
 
     private onBtnAbility(ability: number)
@@ -99,6 +94,11 @@ export class PlayerInfoManager extends Component
 
     private onBtnSave()
     {
+        if (this.playerName.textLabel.string == "")
+        {
+            TipsManager.getInstance().open(EMsgCode.NAME_EMPTY);
+            return;
+        }
         if (this.isAddPlayer)
         {
             const playerInfo: PlayerInfo = new PlayerInfo(Data.playerInfoList.length + 1);
@@ -137,6 +137,7 @@ export class PlayerInfoManager extends Component
         }
         else
         {
+            this.editIndex = -1;
             this.initUI();
         }
     }
@@ -151,8 +152,6 @@ export class PlayerInfoManager extends Component
         this.playerAbility_3.isChecked = playerInfo.ability == 3;
         this.playerAbility_4.isChecked = playerInfo.ability == 4;
         this.playerAbility_5.isChecked = playerInfo.ability == 5;
-        this.btnRegular.isChecked = playerInfo.isRegular;
-        this.btnAttend.isChecked = playerInfo.isAttend;
         this.btnSpecial.isChecked = playerInfo.type == EPlayerType.SPECIAL;
         this.tmpPlayerSetting = playerInfo;
     }
@@ -166,8 +165,6 @@ export class PlayerInfoManager extends Component
         this.playerAbility_3.isChecked = false;
         this.playerAbility_4.isChecked = false;
         this.playerAbility_5.isChecked = false;
-        this.btnRegular.isChecked = false;
-        this.btnAttend.isChecked = false;
         this.btnSpecial.isChecked = false;
     }
 
@@ -177,10 +174,14 @@ export class PlayerInfoManager extends Component
         this.playerName.string = "";
     }
 
-    public generateTestData()
+    public generateTestData(count: number = 0)
     {
+        if (count == 0)
+        {
+            return;
+        }
         console.log("add test data !!!");
-        for (let i = 0; i < 15; i++)
+        for (let i = 0; i < count; i++)
         {
             const playerInfo: PlayerInfo = new PlayerInfo(Data.playerInfoList.length + 1);
             playerInfo.name = `Player_${i.toString()}`;

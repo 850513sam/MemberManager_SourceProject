@@ -139,6 +139,6 @@ export class MatchManager extends Component
             }
         }
         averageMatchCount = totalMatchCount / (this.restingPlayers.length - 1);
-        return averageMatchCount > this.restingPlayers[playerIndex].completeMatchCount;
+        return averageMatchCount + 1 > this.restingPlayers[playerIndex].completeMatchCount;
     }
 }

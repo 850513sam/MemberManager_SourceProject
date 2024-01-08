@@ -7,10 +7,17 @@
     "outputName": "web-mobile",
     "mainBundleCompressionType": "merge_dep",
     "platform": "web-mobile",
-    "name": "HiloClient",
+    "name": "MemberManager",
     "startScene": "1e8f5cbe-9564-4635-9a15-85e797071d87",
     "replaceSplashScreen": true,
-    "sourceMaps": true
+    "sourceMaps": false,
+    "scenes": [
+      {
+        "url": "db://assets/scenes/Loading.scene",
+        "uuid": "1e8f5cbe-9564-4635-9a15-85e797071d87",
+        "inBundle": false
+      }
+    ]
   },
   "options": {
     "web-mobile": {
