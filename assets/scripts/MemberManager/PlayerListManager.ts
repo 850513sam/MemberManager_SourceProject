@@ -32,7 +32,7 @@ export class PlayerListManager extends Component
         this.btnClose.node.on(Button.EventType.CLICK, this.onBtnClose.bind(this));
         setTimeout(() => 
         {            
-            PlayerInfoManager.getInstance().generateTestData(15);
+            PlayerInfoManager.getInstance().generateTestData(0);
         }, 200);
     }
 
