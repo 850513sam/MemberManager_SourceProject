@@ -65,7 +65,7 @@ export class MainUI extends Component
         this.versionLabel.string = this.version;
         setTimeout(() => 
         {
-            this.autoLoadMemberData();
+            this.autoLoadPlayerData();
         }, 200);
     }
 
@@ -79,7 +79,7 @@ export class MainUI extends Component
         this.btnSetCourt_2.node.on(Button.EventType.CLICK, () => { this.onBtnSetCourt(1); });
     }
 
-    private autoLoadMemberData()
+    private autoLoadPlayerData()
     {
         const memberSetting = StorageHelper.loadFromLocal(StoragePath.MemberSetting);
         let localPlayerList: PlayerInfo[] = [];
@@ -93,11 +93,18 @@ export class MainUI extends Component
         }
         localPlayerList.forEach((playerInfo: PlayerInfo) => 
         {
-            playerInfo.completeMatchCount = 0;
+            this.initPlayerData(playerInfo);
             Data.playerInfoList.push(playerInfo);
             PlayerListManager.getInstance().addPlayerItem();
         });
         TipsManager.getInstance().open(EMsgCode.FIND_DATA);
+    }
+
+    private initPlayerData(playerInfo: PlayerInfo)
+    {
+        playerInfo.completeMatchCount = 0;
+        playerInfo.isChoose = false;
+        playerInfo.isPlaying = false;
     }
 
     private onBtnAddPlayer()
@@ -120,11 +127,11 @@ export class MainUI extends Component
                 needToSavePlayerList.push(playerInfo);
             }
         });
-        const memberSetting = 
+        const playerSetting = 
         {
             playerList: needToSavePlayerList,
         };
-        StorageHelper.saveToLocal(StoragePath.MemberSetting, memberSetting);
+        StorageHelper.saveToLocal(StoragePath.MemberSetting, playerSetting);
         TipsManager.getInstance().open(EMsgCode.SAVE_SUCCESSFUL);
     }
 

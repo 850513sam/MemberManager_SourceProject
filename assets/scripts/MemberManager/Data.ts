@@ -23,8 +23,6 @@ export class PlayerInfo
     public type: EPlayerType = EPlayerType.DEFAULT;
     public isPlaying: boolean = false;
     public isChoose: boolean = false;
-    public isAttend: boolean = false;
-    public isRegular: boolean = false;
     public completeMatchCount: number = 0;
 
     public constructor(playerIndex: number = -1)
