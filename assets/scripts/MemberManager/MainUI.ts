@@ -81,15 +81,15 @@ export class MainUI extends Component
 
     private autoLoadPlayerData()
     {
-        const memberSetting = StorageHelper.loadFromLocal(StoragePath.MemberSetting);
+        const playerSetting = StorageHelper.loadFromLocal(StoragePath.PlayerSetting);
         let localPlayerList: PlayerInfo[] = [];
-        if (!localPlayerList || !memberSetting)
+        if (!localPlayerList || !playerSetting)
         {
             return;
         }
-        if (memberSetting)
+        if (playerSetting)
         {
-            localPlayerList = StorageHelper.loadFromLocal(StoragePath.MemberSetting).playerList;
+            localPlayerList = StorageHelper.loadFromLocal(StoragePath.PlayerSetting).playerList;
         }
         localPlayerList.forEach((playerInfo: PlayerInfo) => 
         {
@@ -131,7 +131,7 @@ export class MainUI extends Component
         {
             playerList: needToSavePlayerList,
         };
-        StorageHelper.saveToLocal(StoragePath.MemberSetting, playerSetting);
+        StorageHelper.saveToLocal(StoragePath.PlayerSetting, playerSetting);
         TipsManager.getInstance().open(EMsgCode.SAVE_SUCCESSFUL);
     }
 

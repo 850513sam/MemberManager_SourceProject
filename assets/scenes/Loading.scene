@@ -3360,7 +3360,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "MemberUI",
+    "_name": "PlayerUI",
     "_objFlags": 0,
     "_parent": {
       "__id__": 4

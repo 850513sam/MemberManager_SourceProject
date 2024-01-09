@@ -7,7 +7,7 @@
     "outputName": "web-mobile",
     "mainBundleCompressionType": "merge_dep",
     "platform": "web-mobile",
-    "name": "MemberManager",
+    "name": "PlayerManager",
     "startScene": "1e8f5cbe-9564-4635-9a15-85e797071d87",
     "replaceSplashScreen": true,
     "sourceMaps": false,

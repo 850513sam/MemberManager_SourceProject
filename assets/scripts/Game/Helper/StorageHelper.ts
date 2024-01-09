@@ -3,7 +3,7 @@ import Application from '../../Application/Application';
 
 export enum StoragePath {
     AudioSetting = 'AudioSetting',
-    MemberSetting = "MemberSetting",
+    PlayerSetting = "MemberSetting",
 }
 
 namespace StorageHelper {

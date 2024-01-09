@@ -41,14 +41,14 @@ export class PlayerListManager extends Component
         this.close();
     }
 
-    public open(isHidePlayingMember: boolean)
+    public open(isHidePlayingPlayer: boolean)
     {
         this.node.active = true;
-        this.updatePlayerInfo(isHidePlayingMember);
+        this.updatePlayerInfo(isHidePlayingPlayer);
         this.scroll.scrollToTop();
     }
 
-    private updatePlayerInfo(isHidePlayerMember: boolean)
+    private updatePlayerInfo(isHidePlayingPlayer: boolean)
     {
         const playerInfoList: PlayerInfo[] = Data.playerInfoList;
         let isShow: boolean = false;
@@ -58,7 +58,7 @@ export class PlayerListManager extends Component
             {
                 continue;
             }
-            isShow = !isHidePlayerMember ? true : !playerInfoList[i].isChoose;
+            isShow = !isHidePlayingPlayer ? true : !playerInfoList[i].isChoose;
             this.playerItemList[i - 8].active = isShow;
             this.playerItemList[i - 8].getComponent(PlayerItem).updatePlayerInfo(playerInfoList[i]);
         }
