@@ -8,6 +8,7 @@ export class MatchManager extends Component
     private restingPlayers: PlayerInfo[] = [];
     private playingPlayers: PlayerInfo[] = [];
     private needToPlayList: PlayerInfo[] = [];
+    private deltaMatchCount: number = 1;
 
     private static instance: MatchManager = null;
     public static getInstance(): MatchManager
@@ -119,7 +120,7 @@ export class MatchManager extends Component
         this.playingPlayers = [];
         playerInfoList.forEach((playerInfo: PlayerInfo) => 
         {
-            if (playerInfo.type == EPlayerType.NORMAL)
+            if (playerInfo.type == EPlayerType.NORMAL && !playerInfo.isAbsent)
             {
                 playerList = playerInfo.isPlaying ? this.playingPlayers : this.restingPlayers;
                 playerList.push(playerInfo);
@@ -139,6 +140,6 @@ export class MatchManager extends Component
             }
         }
         averageMatchCount = totalMatchCount / (this.restingPlayers.length - 1);
-        return averageMatchCount + 1 > this.restingPlayers[playerIndex].completeMatchCount;
+        return averageMatchCount + this.deltaMatchCount > this.restingPlayers[playerIndex].completeMatchCount;
     }
 }

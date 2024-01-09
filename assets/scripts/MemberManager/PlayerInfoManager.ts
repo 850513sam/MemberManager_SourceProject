@@ -37,6 +37,8 @@ export class PlayerInfoManager extends Component
     private playerAbility_5: Toggle = null;
     @property(Toggle)
     private btnSpecial: Toggle = null;
+    @property(Toggle)
+    private btnAbsent: Toggle = null;
 
     private tmpPlayerSetting: PlayerInfo = new PlayerInfo();
     private isAddPlayer: boolean = true;
@@ -66,12 +68,28 @@ export class PlayerInfoManager extends Component
         this.playerAbility_4.node.on(Toggle.EventType.CLICK, () => { this.onBtnAbility(4); });
         this.playerAbility_5.node.on(Toggle.EventType.CLICK, () => { this.onBtnAbility(5); });
         this.btnSpecial.node.on(Toggle.EventType.CLICK, this.onBtnSpecial.bind(this));
+        this.btnAbsent.node.on(Toggle.EventType.CLICK, this.onBtnAbsent.bind(this));
+    }
+
+    private onBtnAbsent()
+    {
+        if (this.isAddPlayer)
+        {
+            //wait toggle event finish
+            tween(this).delay(0.05).call(() => 
+            {
+                this.tmpPlayerSetting.isAbsent = this.btnAbsent.isChecked;
+            }).start();
+            return;
+        }
+        this.tmpPlayerSetting.isAbsent = !Data.playerInfoList[this.editIndex].isAbsent;
     }
     
     private onBtnSpecial()
     {
         if (this.isAddPlayer)
         {
+            //wait toggle event finish
             tween(this).delay(0.05).call(() => 
             {
                 this.tmpPlayerSetting.type = this.btnSpecial.isChecked ? EPlayerType.SPECIAL : EPlayerType.NORMAL;
@@ -105,6 +123,7 @@ export class PlayerInfoManager extends Component
             playerInfo.name = this.playerName.textLabel.string;
             playerInfo.ability = this.tmpPlayerSetting.ability;
             playerInfo.type = this.btnSpecial.isChecked ? EPlayerType.SPECIAL : EPlayerType.NORMAL;
+            playerInfo.isAbsent = this.tmpPlayerSetting.isAbsent;
             Data.playerInfoList.push(playerInfo);
             PlayerListManager.getInstance().addPlayerItem();
         }
@@ -153,6 +172,7 @@ export class PlayerInfoManager extends Component
         this.playerAbility_4.isChecked = playerInfo.ability == 4;
         this.playerAbility_5.isChecked = playerInfo.ability == 5;
         this.btnSpecial.isChecked = playerInfo.type == EPlayerType.SPECIAL;
+        this.btnAbsent.isChecked = playerInfo.isAbsent;
         this.tmpPlayerSetting = playerInfo;
     }
 
@@ -166,6 +186,7 @@ export class PlayerInfoManager extends Component
         this.playerAbility_4.isChecked = false;
         this.playerAbility_5.isChecked = false;
         this.btnSpecial.isChecked = false;
+        this.btnAbsent.isChecked = false;
     }
 
     public close()
