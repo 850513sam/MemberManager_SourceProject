@@ -75,6 +75,7 @@ export class PlayerListManager extends Component
         const playerCount: number = playerInfoList.length;
         const playerName: string = playerInfoList[playerCount - 1].name;
         const playerItem: Node = instantiate(this.playerItem);
+        playerItem.name += `_${playerName}`;
         playerItem.setParent(this.playerItemRoot.node);
         playerItem.getComponent(PlayerItem).setPlayerInfo(playerName, playerInfoList.length - 1);
         this.playerItemList.push(playerItem);
@@ -83,7 +84,7 @@ export class PlayerListManager extends Component
     public deletePlayer(playerIndex: number)
     {
         const deletePlayer: Node = this.playerItemList[playerIndex - 8];
-        this.playerItemList.splice(playerIndex, 1);
+        this.playerItemList.splice(playerIndex - 8, 1);
         this.playerItemRoot.node.removeChild(deletePlayer);
     }
 }
