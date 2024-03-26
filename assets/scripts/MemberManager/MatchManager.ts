@@ -1,5 +1,6 @@
 import { _decorator, Component, randomRangeInt } from 'cc';
 import { Data, EPlayerType, PlayerInfo } from './Data';
+import { EMsgCode, TipsManager } from './TipsManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('MatchManager')
@@ -8,7 +9,7 @@ export class MatchManager extends Component
     private restingPlayers: PlayerInfo[] = [];
     private playingPlayers: PlayerInfo[] = [];
     private needToPlayList: PlayerInfo[] = [];
-    private deltaMatchCount: number = 1;
+    private readonly deltaMatchCount: number = 1;
 
     private static instance: MatchManager = null;
     public static getInstance(): MatchManager
@@ -30,11 +31,15 @@ export class MatchManager extends Component
         let nextPlayer: PlayerInfo = null;
         this.updatePlayerStatus();
         this.updateNeedToPlayList();
+        if (this.needToPlayList.length < 4)
+        {
+            TipsManager.getInstance().open(EMsgCode.PLAYER_NOT_ENOUGH);
+        }
         for (let i = 0; i < 4; i++)
         {
-            nextPlayer = this.tryGetPlayer();
+            nextPlayer = this.tryGetPlayer(tmpNextMatchPlayers);
             tmpNextMatchPlayers.push(nextPlayer);
-        }
+        }        
         tmpNextMatchPlayers = this.resortPlayersByAbility(tmpNextMatchPlayers);
         teamA.push(tmpNextMatchPlayers[0]);
         teamA.push(tmpNextMatchPlayers[1]);
@@ -45,7 +50,7 @@ export class MatchManager extends Component
 
     private resortPlayersByAbility(players: PlayerInfo[]): PlayerInfo[]
     {
-        let newTeam: PlayerInfo[] = [];
+        const newTeam: PlayerInfo[] = [];
         let strongestPlayer: PlayerInfo = players[0];
         let weakestPlayer: PlayerInfo = players[1];
         for (let i = 0; i < players.length; i++)
@@ -68,7 +73,7 @@ export class MatchManager extends Component
         return newTeam;
     }
 
-    private tryGetPlayer(): PlayerInfo
+    private tryGetPlayer(currentPlayerList: PlayerInfo[]): PlayerInfo
     {
         let removeIndex: number = 0;
         let player: PlayerInfo = null;
@@ -97,6 +102,14 @@ export class MatchManager extends Component
                 this.playingPlayers.splice(removeIndex, 1);
             }
         }
+        //check repeat player
+        currentPlayerList.forEach((currentPlayer: PlayerInfo) => 
+        {
+            if (currentPlayer.name == player.name)
+            {
+                player = Data.defaultPlayer_0_0;
+            }
+        });
         return player;
     }
     
@@ -120,7 +133,7 @@ export class MatchManager extends Component
         this.playingPlayers = [];
         playerInfoList.forEach((playerInfo: PlayerInfo) => 
         {
-            if (playerInfo.type == EPlayerType.NORMAL && !playerInfo.isAbsent)
+            if (playerInfo.type == EPlayerType.NORMAL)
             {
                 playerList = playerInfo.isPlaying ? this.playingPlayers : this.restingPlayers;
                 playerList.push(playerInfo);
@@ -132,13 +145,11 @@ export class MatchManager extends Component
     {
         let totalMatchCount: number = 0;
         let averageMatchCount: number = 0;
-        for (let i = 0; i < this.restingPlayers.length; i++)
+        this.restingPlayers.forEach((player: PlayerInfo) => 
         {
-            if (i != playerIndex)
-            {
-                totalMatchCount += this.restingPlayers[i].completeMatchCount;
-            }
-        }
+            totalMatchCount += player.completeMatchCount;
+        });
+        totalMatchCount -= this.restingPlayers[playerIndex].completeMatchCount;
         averageMatchCount = totalMatchCount / (this.restingPlayers.length - 1);
         return averageMatchCount + this.deltaMatchCount > this.restingPlayers[playerIndex].completeMatchCount;
     }

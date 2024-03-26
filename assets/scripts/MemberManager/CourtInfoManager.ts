@@ -67,11 +67,11 @@ export class CourtInfoManager extends Component
     {
         for (let i = 0; i < 2; i++)
         {
-            const courtInfo = new CourtInfo();
-            const playerA1 = Data[`defaultPlayer_${i}_0`];
-            const playerA2 = Data[`defaultPlayer_${i}_1`];
-            const playerB1 = Data[`defaultPlayer_${i}_2`];
-            const playerB2 = Data[`defaultPlayer_${i}_3`];
+            const courtInfo: CourtInfo = new CourtInfo();
+            const playerA1: PlayerInfo = Data[`defaultPlayer_${i}_0`];
+            const playerA2: PlayerInfo = Data[`defaultPlayer_${i}_1`];
+            const playerB1: PlayerInfo = Data[`defaultPlayer_${i}_2`];
+            const playerB2: PlayerInfo = Data[`defaultPlayer_${i}_3`];
 
             courtInfo.courtName = `5-${i + 5}`;
             courtInfo.index = i;
@@ -263,21 +263,7 @@ export class CourtInfoManager extends Component
     {
         this.editPlayerIndex = editPlayerIndex;
         let defaultPlayer: PlayerInfo = null;
-        switch (editPlayerIndex) 
-        {
-            case 0:
-                defaultPlayer = Data[`defaultPlayer_${this.editCourtIndex}_0`];
-                break;
-            case 1:
-                defaultPlayer = Data[`defaultPlayer_${this.editCourtIndex}_1`];
-                break;
-            case 2:
-                defaultPlayer = Data[`defaultPlayer_${this.editCourtIndex}_2`];
-                break;
-            case 3:
-                defaultPlayer = Data[`defaultPlayer_${this.editCourtIndex}_3`];
-                break;
-        }
+        defaultPlayer = Data[`defaultPlayer_${this.editCourtIndex}_${editPlayerIndex}`];
         this.setNewPlayer(defaultPlayer);
     }
 
@@ -307,25 +293,6 @@ export class CourtInfoManager extends Component
                 this.playerName_b2.string = playerInfo.name;
                 break;
         }
-    }
-
-    private updateAutoMatchBtnStatus()
-    {
-        if (this.getIsPlayerEmpty())
-        {
-            
-        }
-    }
-
-    private getIsPlayerEmpty(): boolean
-    {
-        const courtInfo: CourtInfo = Data.courtInfoList[this.editCourtIndex];
-        const isPlayerEmpty = 
-        courtInfo.teamA[0].type == EPlayerType.DEFAULT || 
-        courtInfo.teamA[1].type == EPlayerType.DEFAULT ||
-        courtInfo.teamB[0].type == EPlayerType.DEFAULT ||
-        courtInfo.teamB[1].type == EPlayerType.DEFAULT;
-        return isPlayerEmpty;
     }
 
     private init()

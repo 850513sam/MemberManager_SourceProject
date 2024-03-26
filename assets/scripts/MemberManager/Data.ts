@@ -23,7 +23,6 @@ export class PlayerInfo
     public type: EPlayerType = EPlayerType.DEFAULT;
     public isPlaying: boolean = false;
     public isChoose: boolean = false;
-    public isAbsent: boolean = false;
     public completeMatchCount: number = 0;
 
     public constructor(playerIndex: number = -1)
@@ -48,6 +47,7 @@ export class Data
 {
     public static playerInfoList: PlayerInfo[] = [];
     public static courtInfoList: CourtInfo[] = [];
+    public static defaultPlayerList: PlayerInfo[] = [];
 
     public static readonly defaultPlayer_0_0: PlayerInfo = new PlayerInfo();
     public static readonly defaultPlayer_0_1: PlayerInfo = new PlayerInfo();
@@ -60,4 +60,17 @@ export class Data
     public static readonly defaultPlayer_1_3: PlayerInfo = new PlayerInfo();
 
     public static teamRecordList: PlayerInfo[][] = [];
+
+    // private constructor()
+    // {
+    //     Data.defaultPlayerList.push(Data.defaultPlayer_0_0);
+    //     Data.defaultPlayerList.push(Data.defaultPlayer_0_1);
+    //     Data.defaultPlayerList.push(Data.defaultPlayer_0_2);
+    //     Data.defaultPlayerList.push(Data.defaultPlayer_0_3);
+
+    //     Data.defaultPlayerList.push(Data.defaultPlayer_1_0);
+    //     Data.defaultPlayerList.push(Data.defaultPlayer_1_1);
+    //     Data.defaultPlayerList.push(Data.defaultPlayer_1_2);
+    //     Data.defaultPlayerList.push(Data.defaultPlayer_1_3);
+    // }
 }

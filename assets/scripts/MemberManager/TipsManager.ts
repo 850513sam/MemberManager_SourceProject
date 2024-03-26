@@ -8,6 +8,7 @@ export enum EMsgCode
     SAVE_SUCCESSFUL,
     CLEAR_SUCCESSFUL,
     NAME_EMPTY,
+    PLAYER_NOT_ENOUGH,
 }
 
 @ccclass('TipsManager')
@@ -38,7 +39,6 @@ export class TipsManager extends Component
         this.close();
         this.title.string = "";
         this.content.string = "";
-
     }
 
     private getMsg(msgCode: EMsgCode): string
@@ -55,6 +55,8 @@ export class TipsManager extends Component
                 return "清除成功";
             case EMsgCode.NAME_EMPTY:
                 return "姓名不可為空";
+            case EMsgCode.PLAYER_NOT_ENOUGH:
+                return "下一場人員不足";
         }
     }
 
